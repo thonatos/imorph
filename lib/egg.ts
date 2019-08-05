@@ -9,7 +9,7 @@ export default class Render extends Base {
   public async addService(namespace: string, service: IService) {
     const filePath = this.getFilePath(namespace, 'services');
     const sourceFile = this.project.createSourceFile(filePath);
-    const { description, methods } = service;
+    const { description = '', methods } = service;
 
     const serviceName = camelcase(`${namespace}_service`, {
       pascalCase: true,
@@ -40,11 +40,6 @@ export default class Render extends Base {
 
       const classMethod = exportedClass.addMethod({
         name: methodName,
-        docs: [
-          {
-            description: methodDescription,
-          },
-        ],
         isAsync: true,
       });
 
@@ -54,11 +49,8 @@ export default class Render extends Base {
           name: parameterName,
           type: parameterType,
           required: parameterRequired,
-          // description: parameterDescription,
         } = parameter;
 
-        // TODO
-        // supoort add jsdoc tag
         classMethod.addParameter({
           name: parameterName,
           hasQuestionToken: !parameterRequired,
@@ -70,13 +62,33 @@ export default class Render extends Base {
       const params = request.map((p) =>
         p.required ? p.name : `${p.name} || null`
       );
-      classMethod.setBodyText(`
-        return this.ctx.proxy.${namespace}.${methodName}(${params.join(',')});
-      `);
+      classMethod.setBodyText(
+        `return this.ctx.proxy.${namespace}.${methodName}(${params.join(',')});`
+      );
 
       // return
-      const { type: returnType } = response;
+      const { type: returnType, description: returnDescription } = response;
       classMethod.setReturnType(`Promise<${returnType}>`);
+
+      // jsdoc
+      classMethod.addJsDoc({
+        description: (writer) => {
+          // description
+          writer.writeLine(methodDescription);
+
+          // parameters
+          request.map(({ name, type, description: parameterDescription }) =>
+            // @param {string} author - The author of the book.
+            writer.writeLine(
+              `@param {${type}} ${name} - ${parameterDescription}`
+            )
+          );
+
+          // return
+          // @returns {number}
+          writer.write(`@return {${returnType}} ${returnDescription}`);
+        },
+      });
     });
 
     sourceFile.formatText({
@@ -93,7 +105,7 @@ interface IParameter {
   name: string;
   type: string;
   required: boolean;
-  description: string;
+  description?: string;
 }
 
 interface IMethod {
@@ -102,10 +114,11 @@ interface IMethod {
   request: IParameter[];
   response: {
     type: string;
+    description?: string;
   };
 }
 
 interface IService {
-  description: string;
   methods: IMethod[];
+  description?: string;
 }
