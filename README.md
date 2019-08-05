@@ -6,7 +6,7 @@
 
 ### Egg generator
 
-> Use the specific description file to generate a egg application.
+> Use the specific description file to generate an egg application.
 
 #### TODO
 
@@ -67,4 +67,18 @@ plugins:
   - acl
 ```
 
-## More
+## Development
+
+### prepare
+
+```bash
+yarn
+```
+
+### test
+
+```bash
+yarn test
+```
+
+> you can debug with vscode (Jest).
