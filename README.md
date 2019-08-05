@@ -35,7 +35,7 @@ controllers:
       - route: /user/:id
         method: GET
         auth: 'BASIC_LOGIN'
-        description: get user detaik by user id
+        description: get user detail by user id
 
 services:
   user:

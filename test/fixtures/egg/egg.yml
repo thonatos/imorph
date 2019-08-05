@@ -9,36 +9,109 @@ models:
 
 controllers:
   user:
+    prefix: '/user'
     routes:
-      - route: /user/:id
+      - name: index
+        path: /
+        method: GET
+        query:
+          - pageNum
+          - sizeSize
+        handler: user.index
+        description: get user list
+      - name: create
+        path: /
+        method: POST
+        body:
+          - model
+        handler: user.create
+        description: create user
+      - name: update
+        path: /:id
+        method: PUT
+        body:
+          - model
+        handler: user.update
+        description: update user
+      - name: show
+        path: /:id
         method: GET
         auth: 'BASIC_LOGIN'
-        description: get user detaik by user id
+        handler: user.show
+        description: get user detail by user id
+      - name: destroy
+        path: :id
+        method: DELETE
+        handler: user.destroy
+        description: delete user by id
+    description: user controller
 
 services:
   user:
     methods:
-      - name: getUserById
-        description: get user detail by user id
+      - name: index
+        description: get user list
+        request:
+          - name: pageNumber
+            type: number
+            required: true
+            description: page number
+          - name: pageSize
+            type: number
+            required: true
+            description: page size
+        response:
+          type: any
+          description: user list
+
+      - name: create
+        description: create user
+        request:
+          - name: model
+            type: IUser
+            required: true
+            description: user model
+        response:
+          type: any
+          description: user detail
+
+      - name: show
+        description: get user detail by id
         request:
           - name: id
             type: number
             required: true
             description: user id
-        response:
-          type: any
-          description: user detail
-      - name: getUserByName
-        description: get user detail by user name
-        request:
-          - name: name
-            type: string
-            required: true
-            description: user name
           - name: privateInfo
             type: boolean
             required: false
             description: show private user info
+        response:
+          type: any
+          description: user detail
+
+      - name: update
+        description: update user
+        request:
+          - name: id
+            type: number
+            required: true
+            description: user id
+          - name: model
+            type: IUser
+            required: true
+            description: user model
+        response:
+          type: any
+          description: user detail
+
+      - name: destroy
+        description: delete user by id
+        request:
+          - name: id
+            type: number
+            required: true
+            description: user id
         response:
           type: any
           description: user detail

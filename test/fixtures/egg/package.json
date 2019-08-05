@@ -1,0 +1,6 @@
+{
+  "name": "fixtures-egg",
+  "dependencies": {
+    "egg": "latest"
+  }
+}

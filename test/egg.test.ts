@@ -7,32 +7,40 @@ import { Egg, utils } from '..';
 const debug = Debug('imorph');
 
 describe('egg.test.ts', () => {
+  const dist = '.dist';
   const workspace = path.resolve(__dirname, 'fixtures/egg');
-  const distDir = '.dist';
-  const targetDir = path.join(workspace, distDir);
+  const destination = path.join(workspace, dist);
 
   beforeEach(async () => {
-    await rimraf(targetDir);
+    await rimraf(destination);
   });
 
   test('should work', async () => {
-    const sourceFile = path.join(workspace, 'egg.yml');
-    const config = await utils.load(sourceFile);
+    const src = path.join(workspace, 'egg.yml');
+    const config = await utils.load(src);
 
     debug('config', config);
 
     const egg = new Egg({
-      distDir,
+      dist,
       workspace,
     });
 
-    const { services } = config;
+    const { services, controllers } = config;
 
     for (const name in services) {
       if (services.hasOwnProperty(name)) {
         debug('name', name);
         const service = services[name];
         egg.addService(name, service);
+      }
+    }
+
+    for (const name in controllers) {
+      if (controllers.hasOwnProperty(name)) {
+        debug('name', name);
+        const controller = controllers[name];
+        egg.addController(name, controller);
       }
     }
 

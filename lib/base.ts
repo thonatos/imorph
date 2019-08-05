@@ -3,15 +3,15 @@ import path from 'path';
 import { CompilerOptions, Project, QuoteKind, ScriptTarget } from 'ts-morph';
 
 export default class Base {
-  public ext: string;
-  public distDir: string;
-  public workspace: string;
+  public dist: string;
+  public extname: string;
   public project: Project;
+  public workspace: string;
 
   constructor(options: IOptions) {
     const {
-      ext = 'ts',
-      distDir = '.dist',
+      dist = '.dist',
+      extname= 'ts',
       workspace = process.cwd(),
       compilerOptions = {
         strict: true,
@@ -22,10 +22,9 @@ export default class Base {
       },
     } = options;
 
+    this.dist = dist;
+    this.extname = extname;
     this.workspace = workspace;
-
-    this.ext = ext;
-    this.distDir = distDir;
 
     this.project = new Project({
       compilerOptions,
@@ -40,14 +39,14 @@ export default class Base {
   }
 
   public getFileName(name: string) {
-    const { ext } = this;
-    return `${name}.${ext}`;
+    const {extname} = this;
+    return `${name}.${extname}`;
   }
 
   public getFilePath(name: string, prefix: string = '') {
-    const { workspace, distDir } = this;
+    const { workspace, dist } = this;
     const fileName = this.getFileName(name);
-    return path.join(workspace, distDir , prefix, fileName);
+    return path.join(workspace, dist , prefix, fileName);
   }
 
   public load(configPath: string) {
@@ -64,9 +63,9 @@ export default class Base {
 }
 
 export interface IOptions {
+  dist?: string;
+  extname?: string;
   workspace: string;
-  ext?: string;
-  distDir?: string;
-  compilerOptions?: CompilerOptions;
   manipulationSettings?: any;
+  compilerOptions?: CompilerOptions;
 }
