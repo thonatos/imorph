@@ -1,3 +1,4 @@
+import camelcase from 'camelcase';
 import path from 'path';
 import { CompilerOptions, Project, QuoteKind, ScriptTarget } from 'ts-morph';
 
@@ -29,6 +30,12 @@ export default class Base {
     this.project = new Project({
       compilerOptions,
       manipulationSettings,
+    });
+  }
+
+  public getClassName(namespace: string, type: string = '') {
+    return camelcase(`${namespace}_${type}`, {
+      pascalCase: true,
     });
   }
 

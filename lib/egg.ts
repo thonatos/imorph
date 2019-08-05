@@ -1,4 +1,4 @@
-import camelcase from 'camelcase';
+
 import Base, { IOptions } from './base';
 
 export default class Render extends Base {
@@ -6,41 +6,48 @@ export default class Render extends Base {
     super(options);
   }
 
-  public async addService(namespace: string, service: IService) {
-    const filePath = this.getFilePath(namespace, 'services');
-    const sourceFile = this.project.createSourceFile(filePath);
-    const { description = '', methods } = service;
+  public async addService(namespace: string, service: IService, options?: IServiceOptions) {
+    // service
+    const classType = 'service';
+    const className = this.getClassName(namespace, classType);
+    const classTarget = 'services';
 
-    const serviceName = camelcase(`${namespace}_service`, {
-      pascalCase: true,
-    });
+    // file
+    const filePath = this.getFilePath(namespace, classTarget);
+    const sourceFile = this.project.createSourceFile(filePath);
 
     // import
+    const {
+      baseFramework = 'egg',
+      baseService = 'Service',
+    } = options || {};
+
     sourceFile.addImportDeclaration({
-      moduleSpecifier: 'egg',
-      namedImports: ['Service'],
+      namedImports: [baseService],
+      moduleSpecifier: baseFramework,
     });
 
-    // class
+    // default class
+    const { description = className, methods } = service;
     const exportedClass = sourceFile.addClass({
-      name: serviceName,
+      name: className,
+      extends: baseService,
       isDefaultExport: true,
-      extends: 'Service',
       docs: [{ description }],
     });
 
-    // method
+    // class methods
     methods.forEach((method) => {
       const {
-        name: methodName,
-        description: methodDescription,
         request,
         response,
+        name: methodName,
+        description: methodDescription,
       } = method;
 
       const classMethod = exportedClass.addMethod({
-        name: methodName,
         isAsync: true,
+        name: methodName,
       });
 
       // parameters
@@ -53,15 +60,14 @@ export default class Render extends Base {
 
         classMethod.addParameter({
           name: parameterName,
-          hasQuestionToken: !parameterRequired,
           type: parameterType,
+          hasQuestionToken: !parameterRequired,
         });
       });
 
       // body
-      const params = request.map((p) =>
-        p.required ? p.name : `${p.name} || null`
-      );
+      const params = request.map((p) => p.required ? p.name : `${p.name} || null`);
+
       classMethod.setBodyText(
         `return this.ctx.proxy.${namespace}.${methodName}(${params.join(',')});`
       );
@@ -76,21 +82,21 @@ export default class Render extends Base {
           // description
           writer.writeLine(methodDescription);
 
-          // parameters
-          request.map(({ name, type, description: parameterDescription }) =>
-            // @param {string} author - The author of the book.
-            writer.writeLine(
-              `@param {${type}} ${name} - ${parameterDescription}`
+          // @param {string} author - The author of the book.
+          request.map(
+            ({ name, type, description: parameterDescription }) =>
+              writer.writeLine(
+                `@param {${type}} ${name} - ${parameterDescription}`
             )
           );
 
-          // return
           // @returns {number}
-          writer.write(`@return {${returnType}} ${returnDescription}`);
+          writer.write(`@returns {${returnType}} ${returnDescription}`);
         },
       });
     });
 
+    // format
     sourceFile.formatText({
       indentSize: 2,
     });
@@ -121,4 +127,9 @@ interface IMethod {
 interface IService {
   methods: IMethod[];
   description?: string;
+}
+
+interface IServiceOptions {
+  baseService?: string;
+  baseFramework?: string;
 }
