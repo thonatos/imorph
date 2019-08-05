@@ -1,0 +1,49 @@
+{
+  "name": "imorph",
+  "version": "1.0.0",
+  "description": "Morph lib",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "ci": "npm run test",
+    "clean": "./scripts/clean.sh",
+    "dev": "tsc -w",
+    "lint": "tslint --project . ",
+    "semantic-release": "tsc && semantic-release",
+    "test": "jest --verbose",
+    "test-watch": "jest --watch"
+  },
+  "dependencies": {
+    "camelcase": "^5.3.1",
+    "debug": "^4.1.1",
+    "js-yaml": "^3.13.1",
+    "lower-case-first": "^1.0.2",
+    "ts-morph": "^3.1.3"
+  },
+  "devDependencies": {
+    "@types/camelcase": "^5.2.0",
+    "@types/debug": "^4.1.4",
+    "@types/jest": "^24.0.13",
+    "@types/js-yaml": "^3.12.1",
+    "@types/node": "^12.0.2",
+    "jest": "^24.8.0",
+    "mz-modules": "^2.1.0",
+    "semantic-release": "^15.13.18",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
+  },
+  "release": {
+    "branche": "master",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ]
+  },
+  "author": "Thonatos.Yang",
+  "license": "MIT",
+  "repository": "git@github.com:thonatos/imorph.git"
+}
