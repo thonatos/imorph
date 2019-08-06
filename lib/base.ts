@@ -3,16 +3,16 @@ import path from 'path';
 import { CompilerOptions, Project, QuoteKind, ScriptTarget } from 'ts-morph';
 
 export default class Base {
-  public dist: string;
   public extname: string;
   public project: Project;
   public workspace: string;
+  public destination: string;
 
   constructor(options: IOptions) {
     const {
-      dist = '.dist',
       extname= 'ts',
       workspace = process.cwd(),
+      destination,
       compilerOptions = {
         strict: true,
         target: ScriptTarget.ESNext,
@@ -22,14 +22,15 @@ export default class Base {
       },
     } = options;
 
-    this.dist = dist;
-    this.extname = extname;
-    this.workspace = workspace;
-
-    this.project = new Project({
+    const project = new Project({
       compilerOptions,
       manipulationSettings,
     });
+
+    this.extname = extname;
+    this.project = project;
+    this.workspace = workspace;
+    this.destination = destination || workspace;
   }
 
   public getClassName(namespace: string, type: string = '') {
@@ -44,9 +45,9 @@ export default class Base {
   }
 
   public getFilePath(name: string, prefix: string = '') {
-    const { workspace, dist } = this;
+    const { destination } = this;
     const fileName = this.getFileName(name);
-    return path.join(workspace, dist , prefix, fileName);
+    return path.join(destination , prefix, fileName);
   }
 
   public load(configPath: string) {
@@ -63,9 +64,9 @@ export default class Base {
 }
 
 export interface IOptions {
-  dist?: string;
   extname?: string;
   workspace: string;
+  destination?: string;
   manipulationSettings?: any;
   compilerOptions?: CompilerOptions;
 }

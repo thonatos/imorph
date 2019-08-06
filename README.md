@@ -10,7 +10,7 @@
 
 #### TODO
 
-- [ ] egg controllers
+- [x] egg controllers
 - [x] egg services
 - [ ] egg router
 - [ ] egg config
@@ -117,4 +117,4 @@ yarn
 yarn test
 ```
 
-> you can debug with vscode (Jest).
+> you can debug with Visual Studio Code (Jest).

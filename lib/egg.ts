@@ -1,5 +1,5 @@
-import pathToRegexp from 'path-to-regexp';
 import Base, { IOptions } from './base';
+import { getPathParams } from './utils';
 
 export default class Render extends Base {
   constructor(options: IOptions) {
@@ -7,20 +7,21 @@ export default class Render extends Base {
   }
 
   public createClass(namespace: string, options: IClassOptions) {
-    const { base, detail, dest, type, framework } = options;
+    const { base, detail, type, prefix, framework = 'egg', } = options;
 
-    if (!type || !dest) {
-      throw new Error('class type and dest is required.');
+    if (!type) {
+      throw new Error('class type is required.');
     }
 
     // source file
+    const classBase = base || type;
     const className = this.getClassName(namespace, type);
-    const classPath = this.getFilePath(namespace, dest);
+    const classPath = this.getFilePath(namespace, prefix || type);
     const sourceFile = this.project.createSourceFile(classPath);
 
     // import
     sourceFile.addImportDeclaration({
-      namedImports: [base],
+      namedImports: [classBase],
       moduleSpecifier: framework,
     });
 
@@ -28,7 +29,7 @@ export default class Render extends Base {
     const { description = className } = detail;
     const exportedClass = sourceFile.addClass({
       name: className,
-      extends: base,
+      extends: classBase,
       isDefaultExport: true,
       docs: [{ description }],
     });
@@ -42,10 +43,7 @@ export default class Render extends Base {
   public async addService(namespace: string, service: IService) {
     const { sourceFile, exportedClass } = this.createClass(namespace, {
       type: 'service',
-      dest: 'service',
-      base: 'Service',
       detail: service,
-      framework: 'egg',
     });
 
     const { methods } = service;
@@ -120,10 +118,7 @@ export default class Render extends Base {
   public addController(namespace: string, controller: IController) {
     const { sourceFile, exportedClass } = this.createClass(namespace, {
       type: 'controller',
-      dest: 'controller',
-      base: 'Controller',
       detail: controller,
-      framework: 'egg',
     });
 
     const { prefix, routes } = controller;
@@ -143,15 +138,14 @@ export default class Render extends Base {
       const classMethod = exportedClass.addMethod({
         isAsync: true,
         name: methodName,
-        docs: [{
-          description: methodDescription,
-        }],
+        docs: [
+          {
+            description: methodDescription,
+          },
+        ],
       });
 
-      const keys: any = [];
-      const re = pathToRegexp(routePath, keys);
-      const params = keys.map((k) => k.name);
-
+      const params = getPathParams(routePath);
       const bodyText: string[] = [];
 
       if (params.length > 0) {
@@ -167,7 +161,11 @@ export default class Render extends Base {
       }
 
       bodyText.push(
-        `return this.ctx.service.${handlerName}( ${[...params, ...query, ...body, ].join(',')} );`
+        `return this.ctx.service.${handlerName}( ${[
+          ...params,
+          ...query,
+          ...body,
+        ].join(',')} );`
       );
 
       classMethod.setBodyText((writer) => {
@@ -179,7 +177,6 @@ export default class Render extends Base {
     sourceFile.formatText({
       indentSize: 2,
     });
-
   }
 }
 
@@ -222,9 +219,9 @@ interface IController {
 }
 
 interface IClassOptions {
-  base: string;
   type: string;
-  dest: string;
   detail: IService | IController;
-  framework: string;
+  base?: string;
+  prefix?: string;
+  framework?: string;
 }
