@@ -11,12 +11,17 @@ jobs:
       image: thonatos/github-actions-nodejs
     steps:
     - uses: actions/checkout@master
-    - name: ci
+    - name: Install Dependencies
       run: |
         npm install -g npminstall
         npminstall
-        npm run ci
-    - name: release
+    - name: Continuous integration
+      run: npm run ci
+    - name: Code Coverage
+      run: |
+      npm install codecov -g
+      codecov
+    - name: Release NPN Package
       run: npm run semantic-release
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
