@@ -1,7 +1,7 @@
 {
   "name": "imorph",
   "version": "0.0.0-development",
-  "description": "Morph lib",
+  "description": "A morph lib",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -17,7 +17,6 @@
     "camelcase": "^5.3.1",
     "debug": "^4.1.1",
     "js-yaml": "^3.13.1",
-    "lower-case-first": "^1.0.2",
     "path-to-regexp": "^3.0.0",
     "ts-morph": "^3.1.3"
   },

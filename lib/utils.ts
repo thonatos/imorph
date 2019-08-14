@@ -1,5 +1,3 @@
-// import lowerCaseFirst from 'lower-case-first';
-
 import fs from 'fs';
 import yaml from 'js-yaml';
 import pathToRegexp from 'path-to-regexp';
