@@ -4,6 +4,10 @@
 
 ## Features
 
+### Code Analyzer
+
+- [x] analysis project dependencies
+
 ### Egg generator
 
 > Use the specific description file to generate an egg application.

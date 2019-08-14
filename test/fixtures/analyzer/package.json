@@ -1,0 +1,9 @@
+{
+  "name": "fixtures-analysis",
+  "dependencies": {
+    "egg": "latest",
+    "egg-ci": "latest",
+    "mz-modules": "latest",
+    "imorph": "latest"
+  }
+}

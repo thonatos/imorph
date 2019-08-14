@@ -1,4 +1,6 @@
-import Egg from './lib/egg';
 import utils from './lib/utils';
 
-export { Egg, utils };
+import Analyzer from './lib/analyzer';
+import Egg from './lib/egg';
+
+export { utils, Analyzer, Egg };
