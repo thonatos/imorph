@@ -1,0 +1,23 @@
+name: Semantic Release
+on:
+  push:
+    branches:
+    - master
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+    container:
+      image: thonatos/github-actions-nodejs
+    steps:
+    - uses: actions/checkout@master
+    - name: ci
+      run: |
+        npm install -g npminstall
+        npminstall
+        npm run ci
+    - name: release
+      run: npm run semantic-release
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
