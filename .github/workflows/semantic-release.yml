@@ -19,8 +19,8 @@ jobs:
       run: npm run ci
     - name: Code Coverage
       run: |
-      npm install codecov -g
-      codecov
+        npm install codecov -g
+        codecov
     - name: Release NPN Package
       run: npm run semantic-release
       env:
