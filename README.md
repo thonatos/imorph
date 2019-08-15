@@ -15,8 +15,12 @@
 [codecov-url]: https://codecov.io/gh/thonatos/imorph
 [semantic-release-square]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square
 [semantic-release-url]: https://github.com/semantic-release/semantic-release
+[github-actions-square]: https://github.com/thonatos/imorph/workflows/Actions%20Release/badge.svg?style=flat-square
+[github-actions-url]: https://github.com/thonatos/imorph
 
 > a morph lib.
+
+[![Github Actions][github-actions-square]][github-actions-url]
 
 ## Features
 
