@@ -8,6 +8,7 @@ import {
   VariableStatement,
 } from 'ts-morph';
 import Base, { IOptions } from './base';
+import { extractDependencyName } from './utils';
 
 export default class Analysis extends Base {
   constructor(options: IOptions) {
@@ -157,19 +158,11 @@ export default class Analysis extends Base {
    */
   private filterDependencies(modules: string[]) {
     const dependencies = new Set<string>();
-
-    for (const item of modules) {
-      const first = item[0];
-      // ignore file path, `require('./test')`
-      if (first === '.' || first === '/') {
-        continue;
+    for (const moduleName of modules) {
+      const name = extractDependencyName(moduleName);
+      if (name) {
+        dependencies.add(name);
       }
-
-      // require('@ali/egg') / require('egg-view') / require('egg-mock/bootstrap')
-      const arr = item.split('/');
-      const name = first === '@' ? `${arr[0]}/${arr[1]}` : arr[0];
-
-      dependencies.add(name);
     }
     return dependencies;
   }

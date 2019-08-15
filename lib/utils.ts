@@ -20,7 +20,25 @@ export const getPathParams = (urlPath: string) => {
   return keys.map((k) => k.name);
 };
 
+export const extractDependencyName = (moduleName: string) => {
+  if (!moduleName) {
+    return;
+  }
+
+  const first = moduleName[0];
+  // ignore file path, `require('./test')`
+  if (first === '.' || first === '/') {
+    return;
+  }
+
+  const arr = moduleName.split('/');
+  const name = first === '@' ? `${arr[0]}/${arr[1]}` : arr[0];
+
+  return name;
+};
+
 export default {
   load,
   getPathParams,
+  extractDependencyName,
 };
